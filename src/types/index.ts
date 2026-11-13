@@ -34,3 +34,29 @@ export interface CartItem {
   unitPrice: number
   quantity: number
 }
+
+export type FulfillmentMethod = 'delivery' | 'pickup'
+
+export interface DeliveryZone {
+  id: string
+  label: string
+  fee: number // Naira
+}
+
+export interface CustomerDetails {
+  fullName: string
+  phone: string // WhatsApp number
+  zoneId: string
+  address: string
+  landmark: string
+}
+
+export interface CheckoutPayload {
+  fulfillment: FulfillmentMethod
+  customer: CustomerDetails
+  deliveryZone?: DeliveryZone
+  items: CartItem[]
+  subtotal: number
+  deliveryFee: number
+  total: number
+}
