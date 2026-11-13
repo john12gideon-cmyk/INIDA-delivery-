@@ -1,13 +1,5 @@
-import type { DeliveryZone } from '../types'
-
-// Flat delivery fees per zone. Edit to match INIDA's real rates.
-export const DELIVERY_ZONES: DeliveryZone[] = [
-  { id: 'uyo', label: 'Within Uyo', fee: 1500 },
-  { id: 'uyo-outskirts', label: 'Uyo Outskirts (Ewet, Use Offot, Nwaniba)', fee: 2000 },
-  { id: 'ikot-ekpene', label: 'Ikot Ekpene', fee: 3000 },
-  { id: 'eket', label: 'Eket', fee: 3500 },
-  { id: 'oron', label: 'Oron', fee: 4000 },
-]
+// Delivery zones/fees live in the shared catalog so the server charges identically.
+export { DELIVERY_ZONES } from '../../supabase/functions/_shared/catalog'
 
 // PLACEHOLDER pickup details. Replace with INIDA's real location before launch.
 export const PICKUP_LOCATION = {

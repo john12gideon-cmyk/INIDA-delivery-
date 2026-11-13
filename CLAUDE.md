@@ -9,7 +9,9 @@ INIDA is a premium order-and-delivery web app for branded Nigerian food products
 - Icons: `lucide-react` only. **No emojis anywhere in the UI.**
 - Routing: `react-router-dom` (`/` storefront, `/admin` admin panel)
 - Backend: Supabase (`@supabase/supabase-js`) — `orders` table + Realtime
-- Payments: Paystack Inline JS (loaded from `https://js.paystack.co/v1/inline.js`)
+- Payments: Paystack Inline JS (loaded from `https://js.paystack.co/v1/inline.js`).
+  Payment is verified server-side in the `create-order` Edge Function. The
+  browser never writes orders and never sends prices.
 - Notifications: Telegram Bot API, called ONLY from a Supabase Edge Function
   (`supabase/functions/`). The bot token is a server secret and must never be a
   `VITE_*` variable or appear in frontend code.
@@ -25,7 +27,10 @@ src/
   hooks/        Custom hooks (useCart, ...)
   lib/          Pure helpers (formatNaira, order id generation, ...)
 supabase/
-  functions/    Edge Functions (order Telegram alert; holds server secrets)
+  functions/_shared/catalog.ts  SINGLE source of truth for prices + delivery fees
+                                (imported by frontend AND Edge Function)
+  functions/create-order/       Verify Paystack -> insert order -> Telegram alert
+  migrations/                   SQL schema (orders table, RLS, realtime)
 ```
 
 ## Design System
@@ -40,6 +45,10 @@ supabase/
 - Strict TypeScript. No `any`. Shared types live in `src/types`.
 - Small, modular components; one component per file.
 - Prices are integers in Naira (kobo only when talking to Paystack: `naira * 100`).
+- Never trust client prices. Change prices only in `_shared/catalog.ts`, then
+  redeploy `create-order`.
+- `_shared/*.ts` must stay dependency-free (runs in Vite, Node and Deno) and use
+  `.ts` extensions on relative imports (Deno requirement).
 - Side effects (network, storage) live in `src/services` or hooks, never inline in JSX.
 - Handle errors explicitly: user-facing errors get a clear message; background
   tasks (Telegram) fail silently but log to console.

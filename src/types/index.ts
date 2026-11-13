@@ -1,47 +1,23 @@
-export type ProductId = 'crayfish' | 'dryfish' | 'palmoil'
+import type { CatalogProduct, CatalogZone, ProductId } from '../../supabase/functions/_shared/catalog'
 
-export type PackagingKind = 'pouch' | 'bottle'
-
-export interface SizeOption {
-  id: string
-  label: string
-  price: number // Naira
-}
-
-export interface VariantOption {
-  id: string
-  label: string
-}
-
-export interface Product {
-  id: ProductId
-  name: string
-  tagline: string
-  description: string
-  packaging: PackagingKind
-  /** Optional style/type choice, e.g. Whole vs Blended. */
-  variants?: VariantOption[]
-  sizes: SizeOption[]
-}
+export type { ProductId }
+export type Product = CatalogProduct
+export type DeliveryZone = CatalogZone
 
 export interface CartItem {
   /** Unique key: productId + variantId + sizeId */
   key: string
   productId: ProductId
   name: string
+  variantId?: string
   variantLabel?: string
+  sizeId: string
   sizeLabel: string
   unitPrice: number
   quantity: number
 }
 
 export type FulfillmentMethod = 'delivery' | 'pickup'
-
-export interface DeliveryZone {
-  id: string
-  label: string
-  fee: number // Naira
-}
 
 export interface CustomerDetails {
   fullName: string
@@ -56,6 +32,35 @@ export interface CheckoutPayload {
   customer: CustomerDetails
   deliveryZone?: DeliveryZone
   items: CartItem[]
+  subtotal: number
+  deliveryFee: number
+  total: number
+}
+
+/** Order as stored and returned by the create-order Edge Function. */
+export interface ConfirmedOrderItem {
+  productId: ProductId
+  name: string
+  variantId: string | null
+  variantLabel: string | null
+  sizeId: string
+  sizeLabel: string
+  unitPrice: number
+  quantity: number
+  lineTotal: number
+}
+
+export interface ConfirmedOrder {
+  orderCode: string
+  reference: string
+  createdAt: string
+  fulfillment: FulfillmentMethod
+  customerName: string
+  customerPhone: string
+  zoneLabel: string | null
+  address: string | null
+  landmark: string | null
+  items: ConfirmedOrderItem[]
   subtotal: number
   deliveryFee: number
   total: number

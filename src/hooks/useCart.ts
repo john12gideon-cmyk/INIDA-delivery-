@@ -10,6 +10,7 @@ function isCartItem(value: unknown): value is CartItem {
     typeof v.key === 'string' &&
     typeof v.productId === 'string' &&
     typeof v.name === 'string' &&
+    typeof v.sizeId === 'string' &&
     typeof v.sizeLabel === 'string' &&
     typeof v.unitPrice === 'number' &&
     typeof v.quantity === 'number' &&

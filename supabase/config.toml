@@ -1,0 +1,7 @@
+# Minimal Supabase CLI config for INIDA's Edge Functions.
+# Run `supabase link --project-ref <ref>` before deploying.
+
+[functions.create-order]
+# The function does its own trust check (Paystack server-side verification),
+# so it must accept calls carrying only the public anon/publishable key.
+verify_jwt = false

@@ -1,46 +1,138 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { CartDrawer } from './components/CartDrawer'
 import { Checkout } from './components/Checkout'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
+import { PaymentStatusOverlay } from './components/PaymentStatusOverlay'
 import { ProductCard } from './components/ProductCard'
+import { SuccessScreen } from './components/SuccessScreen'
 import { PRODUCTS } from './data/products'
 import { useCart } from './hooks/useCart'
-import type { CheckoutPayload } from './types'
+import {
+  OrderError,
+  buildOrderRequest,
+  clearPendingOrder,
+  confirmOrder,
+  loadPendingOrder,
+  savePendingOrder,
+  type CreateOrderRequest,
+} from './services/orders'
+import { createPaymentReference, emailForPhone, loadPaystack, payWithPaystack } from './services/paystack'
+import type { CheckoutPayload, ConfirmedOrder } from './types'
 
 const YEAR = new Date().getFullYear()
 
-type View = 'shop' | 'checkout'
+type View = 'shop' | 'checkout' | 'success'
+
+type PaymentState =
+  | { kind: 'idle' }
+  | { kind: 'paying' }
+  | { kind: 'confirming' }
+  | { kind: 'error'; message: string; reference?: string; canRetry: boolean }
 
 export default function App() {
   const cart = useCart()
   const [cartOpen, setCartOpen] = useState(false)
   const [view, setView] = useState<View>('shop')
+  const [payment, setPayment] = useState<PaymentState>(() =>
+    loadPendingOrder() ? { kind: 'confirming' } : { kind: 'idle' },
+  )
+  const [order, setOrder] = useState<ConfirmedOrder | null>(null)
+  const pendingRef = useRef<CreateOrderRequest | null>(null)
   const closeCart = useCallback(() => setCartOpen(false), [])
+  const { clear: clearCart } = cart
 
   useEffect(() => {
     window.scrollTo({ top: 0 })
   }, [view])
 
-  // Checkout with an empty cart makes no sense; fall back to the shop.
+  // Preload Paystack as soon as the customer reaches checkout.
+  useEffect(() => {
+    if (view === 'checkout') loadPaystack().catch(() => undefined)
+  }, [view])
+
+  // Sends the paid order to create-order. Only sets state after awaiting.
+  const runConfirm = useCallback(
+    async (request: CreateOrderRequest) => {
+      pendingRef.current = request
+      try {
+        const confirmed = await confirmOrder(request)
+        clearPendingOrder()
+        pendingRef.current = null
+        clearCart()
+        setOrder(confirmed)
+        setView('success')
+        setPayment({ kind: 'idle' })
+      } catch (err) {
+        const e = err instanceof OrderError ? err : new OrderError('Unexpected error.', 'server_error')
+        setPayment({ kind: 'error', message: e.message, reference: request.reference, canRetry: e.retryable })
+      }
+    },
+    [clearCart],
+  )
+
+  const finalize = (request: CreateOrderRequest) => {
+    setPayment({ kind: 'confirming' })
+    void runConfirm(request)
+  }
+
+  // Recover a payment that succeeded but was never confirmed (tab closed, network drop).
+  // Initial state is already 'confirming' in that case (see useState above).
+  useEffect(() => {
+    const pending = loadPendingOrder()
+    // runConfirm only sets state after awaiting the network call.
+    // oxlint-disable-next-line react/set-state-in-effect
+    if (pending) void runConfirm(pending)
+  }, [runConfirm])
+
+  const handlePay = async (payload: CheckoutPayload) => {
+    const reference = createPaymentReference()
+    const request = buildOrderRequest(reference, payload)
+    setPayment({ kind: 'paying' })
+    try {
+      await payWithPaystack({
+        reference,
+        amountNaira: payload.total,
+        email: emailForPhone(payload.customer.phone),
+        metadata: { customer_name: payload.customer.fullName, phone: payload.customer.phone },
+        onSuccess: () => {
+          savePendingOrder(request)
+          finalize(request)
+        },
+        onCancel: () => setPayment((p) => (p.kind === 'paying' ? { kind: 'idle' } : p)),
+      })
+    } catch (err) {
+      setPayment({ kind: 'error', message: (err as Error).message, canRetry: false })
+    }
+  }
+
+  const dismissError = () => {
+    // Keep the pending order stored if it was paid; it will retry on next load.
+    setPayment({ kind: 'idle' })
+  }
+
   const showCheckout = view === 'checkout' && cart.items.length > 0
-
-  const handleCheckout = () => {
-    setCartOpen(false)
-    setView('checkout')
-  }
-
-  const handlePay = (payload: CheckoutPayload) => {
-    // Paystack wired in Milestone 4.
-    console.info('Checkout payload ready', payload)
-  }
+  const showSuccess = view === 'success' && order !== null
 
   return (
     <div className="min-h-screen">
       <Header cartCount={cart.count} onCartClick={() => setCartOpen(true)} />
       <main>
-        {showCheckout ? (
-          <Checkout cart={cart} onBack={() => setView('shop')} onSubmit={handlePay} />
+        {showSuccess ? (
+          <SuccessScreen
+            order={order}
+            onContinue={() => {
+              setOrder(null)
+              setView('shop')
+            }}
+          />
+        ) : showCheckout ? (
+          <Checkout
+            cart={cart}
+            onBack={() => setView('shop')}
+            onSubmit={handlePay}
+            submitting={payment.kind === 'paying'}
+          />
         ) : (
           <>
             <Hero />
@@ -64,7 +156,18 @@ export default function App() {
         © {YEAR} INIDA Foods. Uyo, Akwa Ibom.
       </footer>
 
-      <CartDrawer open={cartOpen} onClose={closeCart} cart={cart} onCheckout={handleCheckout} />
+      <CartDrawer open={cartOpen} onClose={closeCart} cart={cart} onCheckout={() => {
+        setCartOpen(false)
+        setView('checkout')
+      }} />
+
+      {(payment.kind === 'confirming' || payment.kind === 'error') && (
+        <PaymentStatusOverlay
+          state={payment}
+          onRetry={() => pendingRef.current && finalize(pendingRef.current)}
+          onDismiss={dismissError}
+        />
+      )}
     </div>
   )
 }

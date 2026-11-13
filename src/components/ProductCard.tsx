@@ -29,7 +29,9 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
       key: [product.id, variant?.id, size.id].filter(Boolean).join(':'),
       productId: product.id,
       name: product.name,
+      variantId: variant?.id,
       variantLabel: variant?.label,
+      sizeId: size.id,
       sizeLabel: size.label,
       unitPrice: size.price,
     })
