@@ -1,3 +1,5 @@
+import { useCallback, useState } from 'react'
+import { CartDrawer } from './components/CartDrawer'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
 import { ProductCard } from './components/ProductCard'
@@ -8,10 +10,17 @@ const YEAR = new Date().getFullYear()
 
 export default function App() {
   const cart = useCart()
+  const [cartOpen, setCartOpen] = useState(false)
+  const closeCart = useCallback(() => setCartOpen(false), [])
+
+  const handleCheckout = () => {
+    setCartOpen(false)
+    // Checkout view wired in Milestone 3.
+  }
 
   return (
     <div className="min-h-screen">
-      <Header cartCount={cart.count} onCartClick={() => undefined} />
+      <Header cartCount={cart.count} onCartClick={() => setCartOpen(true)} />
       <main>
         <Hero />
         <section id="shop" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-24 sm:px-6">
@@ -31,6 +40,8 @@ export default function App() {
       <footer className="border-t border-ink-100 py-8 text-center text-xs text-ink-400">
         © {YEAR} INIDA Foods. Uyo, Akwa Ibom.
       </footer>
+
+      <CartDrawer open={cartOpen} onClose={closeCart} cart={cart} onCheckout={handleCheckout} />
     </div>
   )
 }

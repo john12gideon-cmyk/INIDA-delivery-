@@ -10,18 +10,22 @@ INIDA is a premium order-and-delivery web app for branded Nigerian food products
 - Routing: `react-router-dom` (`/` storefront, `/admin` admin panel)
 - Backend: Supabase (`@supabase/supabase-js`) — `orders` table + Realtime
 - Payments: Paystack Inline JS (loaded from `https://js.paystack.co/v1/inline.js`)
-- Notifications: Telegram Bot API (silent background `fetch`)
+- Notifications: Telegram Bot API, called ONLY from a Supabase Edge Function
+  (`supabase/functions/`). The bot token is a server secret and must never be a
+  `VITE_*` variable or appear in frontend code.
 
 ## Folder Structure
 ```
 src/
   components/   Storefront UI (ProductCard, CartDrawer, Checkout, SuccessScreen, ...)
   admin/        PIN-protected admin panel (/admin)
-  services/     Side-effect modules: supabase.ts, paystack.ts, telegram.ts
+  services/     Side-effect modules: supabase.ts, paystack.ts
   types/        Shared TypeScript types (Product, Variant, CartItem, Order, ...)
   data/         Static catalog data (products, delivery zones, pickup info)
   hooks/        Custom hooks (useCart, ...)
   lib/          Pure helpers (formatNaira, order id generation, ...)
+supabase/
+  functions/    Edge Functions (order Telegram alert; holds server secrets)
 ```
 
 ## Design System
@@ -47,10 +51,11 @@ Build in this order. Finish, verify (`npm run build`), commit, and push each ste
 before starting the next. Confirm with the owner after each milestone.
 1. Core storefront (catalog + interactive variant cards)
 2. Cart (slide-out drawer, localStorage persistence)
-3. Checkout (delivery/pickup toggle, forms) + Paystack
-4. Supabase order persistence
-5. Telegram background alert
-6. Success screen + receipt actions
-7. Admin panel (`/admin`, PIN, live orders, status toggle)
+3. Checkout (delivery/pickup toggle, forms)
+4. Paystack payment
+5. Supabase order persistence
+6. Telegram alert via Supabase Edge Function (server-side, token never in browser)
+7. Success screen + receipt actions
+8. Admin panel (`/admin`, PIN, live orders, status toggle)
 
 Do not rush or dump all code at once.
