@@ -17,7 +17,7 @@ import {
   savePendingOrder,
   type CreateOrderRequest,
 } from './services/orders'
-import { createPaymentReference, emailForPhone, loadPaystack, payWithPaystack } from './services/paystack'
+import { createPaymentReference, loadPaystack, payWithPaystack, paystackEmail } from './services/paystack'
 import type { CheckoutPayload, ConfirmedOrder } from './types'
 
 const YEAR = new Date().getFullYear()
@@ -27,6 +27,7 @@ type View = 'shop' | 'checkout' | 'success'
 type PaymentState =
   | { kind: 'idle' }
   | { kind: 'paying' }
+  | { kind: 'cancelled' }
   | { kind: 'confirming' }
   | { kind: 'error'; message: string; reference?: string; canRetry: boolean }
 
@@ -93,13 +94,28 @@ export default function App() {
       await payWithPaystack({
         reference,
         amountNaira: payload.total,
-        email: emailForPhone(payload.customer.phone),
-        metadata: { customer_name: payload.customer.fullName, phone: payload.customer.phone },
+        email: paystackEmail(payload.customer.phone, payload.customer.email),
+        metadata: {
+          order_reference: reference,
+          customer_name: payload.customer.fullName,
+          phone: payload.customer.phone,
+          fulfillment: payload.fulfillment,
+          // Shown on the transaction in the Paystack dashboard.
+          custom_fields: [
+            { display_name: 'Customer', variable_name: 'customer_name', value: payload.customer.fullName },
+            { display_name: 'WhatsApp', variable_name: 'phone', value: payload.customer.phone },
+            {
+              display_name: 'Fulfillment',
+              variable_name: 'fulfillment',
+              value: payload.fulfillment === 'delivery' ? `Delivery: ${payload.deliveryZone?.label ?? ''}` : 'Pickup',
+            },
+          ],
+        },
         onSuccess: () => {
           savePendingOrder(request)
           finalize(request)
         },
-        onCancel: () => setPayment((p) => (p.kind === 'paying' ? { kind: 'idle' } : p)),
+        onCancel: () => setPayment((p) => (p.kind === 'paying' ? { kind: 'cancelled' } : p)),
       })
     } catch (err) {
       setPayment({ kind: 'error', message: (err as Error).message, canRetry: false })
@@ -132,6 +148,7 @@ export default function App() {
             onBack={() => setView('shop')}
             onSubmit={handlePay}
             submitting={payment.kind === 'paying'}
+            notice={payment.kind === 'cancelled' ? 'Payment cancelled. Nothing was charged and your cart is saved.' : undefined}
           />
         ) : (
           <>

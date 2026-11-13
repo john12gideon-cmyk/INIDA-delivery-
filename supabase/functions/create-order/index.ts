@@ -126,7 +126,14 @@ Deno.serve(async (req) => {
   // 1. Validate + price.
   let order: PricedOrder
   try {
-    order = priceOrder(await req.json())
+    const raw: unknown = await req.json()
+    order = priceOrder(raw)
+    // The browser also sends its own totals. They are never trusted, but a
+    // mismatch means a stale frontend (e.g. prices changed without a redeploy).
+    const clientTotal = (raw as { total?: unknown }).total
+    if (typeof clientTotal === 'number' && clientTotal !== order.total) {
+      console.warn('Client/server total mismatch', { reference: order.reference, clientTotal, serverTotal: order.total })
+    }
   } catch (err) {
     if (err instanceof ValidationError || err instanceof SyntaxError) {
       return json(400, { error: err.message, code: 'invalid_request' })

@@ -46,14 +46,20 @@ export function loadPaystack(): Promise<void> {
   return loader
 }
 
-/** Unique, URL-safe Paystack reference. */
+const REF_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no 0/O/1/I confusion
+
+/** Unique Paystack reference like INIDA-7KQ2MX9VHT (10 random chars, ~50 bits). */
 export function createPaymentReference(): string {
-  const rand = crypto.getRandomValues(new Uint32Array(2))
-  return `INIDA_${Date.now().toString(36)}_${rand[0].toString(36)}${rand[1].toString(36)}`.toUpperCase()
+  const bytes = crypto.getRandomValues(new Uint8Array(10))
+  let out = ''
+  for (const b of bytes) out += REF_ALPHABET[b % REF_ALPHABET.length]
+  return `INIDA-${out}`
 }
 
-export function emailForPhone(phone: string): string {
-  return `${phone.replace(/\D/g, '')}@${config.paystackEmailDomain}`
+/** Customer's email if given, otherwise a stable phone-based address. */
+export function paystackEmail(phone: string, email?: string): string {
+  const e = email?.trim()
+  return e ? e : `${phone.replace(/\D/g, '')}@${config.paystackEmailDomain}`
 }
 
 interface PayOptions {

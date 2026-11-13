@@ -22,6 +22,7 @@ export type FulfillmentMethod = 'delivery' | 'pickup'
 export interface CustomerDetails {
   fullName: string
   phone: string // WhatsApp number
+  email: string // optional; used for the Paystack receipt
   zoneId: string
   address: string
   landmark: string

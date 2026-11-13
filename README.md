@@ -8,7 +8,8 @@ Supabase, Paystack, Telegram.
 
 ```bash
 npm install
-cp .env.example .env.local   # fill in public keys
+# .env.local holds placeholders; paste your public keys into it.
+# Placeholder values (your_..._here) are treated as "not configured".
 npm run dev
 ```
 

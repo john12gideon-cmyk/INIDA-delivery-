@@ -1,4 +1,4 @@
-import { ArrowLeft, Clock, ExternalLink, Lock, MapPin } from 'lucide-react'
+import { ArrowLeft, Clock, ExternalLink, Info, Lock, MapPin } from 'lucide-react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { DELIVERY_ZONES, PICKUP_LOCATION } from '../data/fulfillment'
 import type { CartApi } from '../hooks/useCart'
@@ -14,11 +14,13 @@ interface CheckoutProps {
   onBack: () => void
   onSubmit: (payload: CheckoutPayload) => void
   submitting?: boolean
+  /** Non-error status shown above the pay button, e.g. after the customer closes Paystack. */
+  notice?: string
 }
 
 const DRAFT_KEY = 'inida.checkout.v1'
 
-const EMPTY: CustomerDetails = { fullName: '', phone: '', zoneId: '', address: '', landmark: '' }
+const EMPTY: CustomerDetails = { fullName: '', phone: '', email: '', zoneId: '', address: '', landmark: '' }
 
 function loadDraft(): CustomerDetails {
   try {
@@ -29,7 +31,7 @@ function loadDraft(): CustomerDetails {
   }
 }
 
-export function Checkout({ cart, onBack, onSubmit, submitting = false }: CheckoutProps) {
+export function Checkout({ cart, onBack, onSubmit, submitting = false, notice }: CheckoutProps) {
   const [fulfillment, setFulfillment] = useState<FulfillmentMethod>('delivery')
   const [customer, setCustomer] = useState<CustomerDetails>(loadDraft)
   const [attempted, setAttempted] = useState(false)
@@ -68,6 +70,7 @@ export function Checkout({ cart, onBack, onSubmit, submitting = false }: Checkou
         ...customer,
         fullName: customer.fullName.trim(),
         phone: customer.phone.trim(),
+        email: customer.email.trim(),
         address: fulfillment === 'delivery' ? customer.address.trim() : '',
         landmark: fulfillment === 'delivery' ? customer.landmark.trim() : '',
         zoneId: fulfillment === 'delivery' ? customer.zoneId : '',
@@ -133,6 +136,22 @@ export function Checkout({ cart, onBack, onSubmit, submitting = false }: Checkou
                   className={inputClass(!!errors.phone)}
                 />
               </FormField>
+              <div className="sm:col-span-2">
+                <FormField id="co-email" label="Email (optional)" error={errors.email} hint="For your Paystack payment receipt.">
+                  <input
+                    id="co-email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    value={customer.email}
+                    onChange={(e) => update('email', e.target.value)}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={describedBy('email')}
+                    placeholder="you@example.com"
+                    className={inputClass(!!errors.email)}
+                  />
+                </FormField>
+              </div>
             </div>
           </section>
 
@@ -258,13 +277,19 @@ export function Checkout({ cart, onBack, onSubmit, submitting = false }: Checkou
             </div>
           </dl>
 
+          {notice && !submitting && (
+            <p role="status" className="mt-5 flex items-start gap-2 rounded-xl bg-brand-50 px-3.5 py-3 text-sm text-brand-800">
+              <Info className="mt-0.5 h-4 w-4 shrink-0" />
+              {notice}
+            </p>
+          )}
           <button
             type="submit"
             disabled={submitting || cart.items.length === 0}
             className="mt-6 inline-flex h-13 w-full items-center justify-center gap-2 rounded-full bg-brand-500 text-[15px] font-semibold text-white transition-all hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-ink-300"
           >
             <Lock className="h-4 w-4" strokeWidth={2.5} />
-            {submitting ? 'Opening secure payment…' : `Pay ${formatNaira(total)}`}
+            {submitting ? 'Opening secure payment…' : `Pay Now · ${formatNaira(total)}`}
           </button>
           <p className="mt-3 text-center text-xs text-ink-400">Secured by Paystack. Card, transfer and USSD accepted.</p>
         </aside>

@@ -12,6 +12,9 @@ export function validateCustomer(c: CustomerDetails, fulfillment: FulfillmentMet
   const errors: FieldErrors = {}
   if (c.fullName.trim().length < 2) errors.fullName = 'Enter your full name.'
   if (!isValidNigerianPhone(c.phone)) errors.phone = 'Enter a valid Nigerian WhatsApp number.'
+  if (c.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c.email.trim())) {
+    errors.email = 'Enter a valid email or leave it blank.'
+  }
   if (fulfillment === 'delivery') {
     if (!c.zoneId) errors.zoneId = 'Choose a delivery zone.'
     if (c.address.trim().length < 5) errors.address = 'Enter your street address.'

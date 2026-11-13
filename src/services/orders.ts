@@ -1,13 +1,30 @@
 import { FunctionsFetchError, FunctionsHttpError, FunctionsRelayError } from '@supabase/supabase-js'
 import type { CheckoutPayload, ConfirmedOrder } from '../types'
-import { getSupabase } from './supabase'
+import { getSupabase } from '../lib/supabase'
 
-/** Body sent to the create-order Edge Function. Prices are NOT sent; the server computes them. */
+/**
+ * Body sent to the create-order Edge Function: the full order as the customer saw it.
+ * The server re-prices everything from the shared catalog and only trusts its own
+ * numbers; client prices/totals are sent for logging and mismatch detection.
+ */
 export interface CreateOrderRequest {
   reference: string
   fulfillment: CheckoutPayload['fulfillment']
   customer: CheckoutPayload['customer']
-  items: { productId: string; variantId?: string; sizeId: string; quantity: number }[]
+  items: {
+    productId: string
+    name: string
+    variantId?: string
+    variantLabel?: string
+    sizeId: string
+    sizeLabel: string
+    unitPrice: number
+    quantity: number
+    lineTotal: number
+  }[]
+  subtotal: number
+  deliveryFee: number
+  total: number
 }
 
 export type OrderErrorCode =
@@ -37,10 +54,18 @@ export function buildOrderRequest(reference: string, payload: CheckoutPayload): 
     customer: payload.customer,
     items: payload.items.map((i) => ({
       productId: i.productId,
+      name: i.name,
       variantId: i.variantId,
+      variantLabel: i.variantLabel,
       sizeId: i.sizeId,
+      sizeLabel: i.sizeLabel,
+      unitPrice: i.unitPrice,
       quantity: i.quantity,
+      lineTotal: i.unitPrice * i.quantity,
     })),
+    subtotal: payload.subtotal,
+    deliveryFee: payload.deliveryFee,
+    total: payload.total,
   }
 }
 

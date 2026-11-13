@@ -21,11 +21,11 @@ INIDA is a premium order-and-delivery web app for branded Nigerian food products
 src/
   components/   Storefront UI (ProductCard, CartDrawer, Checkout, SuccessScreen, ...)
   admin/        PIN-protected admin panel (/admin)
-  services/     Side-effect modules: supabase.ts, paystack.ts
+  services/     Side-effect modules: paystack.ts, orders.ts (create-order calls)
   types/        Shared TypeScript types (Product, Variant, CartItem, Order, ...)
   data/         Static catalog data (products, delivery zones, pickup info)
   hooks/        Custom hooks (useCart, ...)
-  lib/          Pure helpers (formatNaira, order id generation, ...)
+  lib/          Helpers + config: supabase.ts (client), config.ts, format, receipt, validation
 supabase/
   functions/_shared/catalog.ts  SINGLE source of truth for prices + delivery fees
                                 (imported by frontend AND Edge Function)

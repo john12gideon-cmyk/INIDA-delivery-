@@ -161,25 +161,25 @@ function naira(n: number): string {
 export function formatTelegramMessage(order: PricedOrder, orderCode: string): string {
   const lines = [
     `<b>New paid order #${escapeHtml(orderCode)}</b>`,
-    `<b>Total:</b> ${naira(order.total)}`,
+    `<b>Total paid:</b> ${naira(order.total)} (NGN)`,
     '',
     `<b>Customer:</b> ${escapeHtml(order.customerName)}`,
     `<b>WhatsApp:</b> ${escapeHtml(order.customerPhone)}`,
   ]
   if (order.fulfillment === 'delivery') {
     lines.push(
-      `<b>Delivery:</b> ${escapeHtml(order.zone?.label ?? '')} (${naira(order.deliveryFee)})`,
+      `<b>Fulfillment:</b> Doorstep Delivery, ${escapeHtml(order.zone?.label ?? '')} (fee ${naira(order.deliveryFee)})`,
       `<b>Address:</b> ${escapeHtml(order.address ?? '')}`,
       `<b>Landmark:</b> ${escapeHtml(order.landmark ?? '')}`,
     )
   } else {
-    lines.push('<b>Fulfillment:</b> Pickup')
+    lines.push('<b>Fulfillment:</b> Pickup at INIDA')
   }
   lines.push('', '<b>Items</b>')
   for (const i of order.items) {
     const desc = [i.variantLabel, i.sizeLabel].filter(Boolean).join(', ')
     lines.push(`• ${i.quantity} × ${escapeHtml(i.name)} (${escapeHtml(desc)}) = ${naira(i.lineTotal)}`)
   }
-  lines.push('', `Ref: <code>${escapeHtml(order.reference)}</code>`)
+  lines.push('', `<b>Paystack ref:</b> <code>${escapeHtml(order.reference)}</code>`)
   return lines.join('\n')
 }
