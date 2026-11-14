@@ -36,7 +36,7 @@ export function Hero() {
         <ul className="mt-10 grid gap-3 sm:grid-cols-3">
           {PERKS.map(({ icon: Icon, label }) => (
             <li key={label} className="flex items-center gap-3 text-sm font-medium text-ink-700">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-brand-600 shadow-sm ring-1 ring-ink-100">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-card text-brand-600 shadow-sm ring-1 ring-ink-100">
                 <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
               </span>
               {label}

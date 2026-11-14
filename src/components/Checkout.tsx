@@ -100,14 +100,14 @@ export function Checkout({ cart, onBack, onSubmit, submitting = false, notice }:
       <form onSubmit={handleSubmit} noValidate className="mt-8 grid gap-8 lg:grid-cols-[1fr_400px] lg:items-start">
         {/* Left: details */}
         <div className="space-y-6">
-          <section className="rounded-3xl border border-ink-100 bg-white p-5 sm:p-7">
+          <section className="rounded-3xl border border-ink-100 bg-card p-5 sm:p-7">
             <h2 className="text-base font-semibold text-ink-900">How would you like to receive it?</h2>
             <div className="mt-4">
               <FulfillmentToggle value={fulfillment} onChange={setFulfillment} />
             </div>
           </section>
 
-          <section className="rounded-3xl border border-ink-100 bg-white p-5 sm:p-7">
+          <section className="rounded-3xl border border-ink-100 bg-card p-5 sm:p-7">
             <h2 className="text-base font-semibold text-ink-900">Your details</h2>
             <div className="mt-5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
               <FormField id="co-fullName" label="Full name" error={errors.fullName}>
@@ -156,7 +156,7 @@ export function Checkout({ cart, onBack, onSubmit, submitting = false, notice }:
           </section>
 
           {fulfillment === 'delivery' ? (
-            <section key="delivery" className="animate-[price-in_250ms_ease-out] rounded-3xl border border-ink-100 bg-white p-5 sm:p-7">
+            <section key="delivery" className="animate-[price-in_250ms_ease-out] rounded-3xl border border-ink-100 bg-card p-5 sm:p-7">
               <h2 className="text-base font-semibold text-ink-900">Delivery address</h2>
               <div className="mt-5 grid gap-y-2">
                 <FormField id="co-zoneId" label="Delivery zone" error={errors.zoneId}>
@@ -206,7 +206,7 @@ export function Checkout({ cart, onBack, onSubmit, submitting = false, notice }:
               </div>
             </section>
           ) : (
-            <section key="pickup" className="animate-[price-in_250ms_ease-out] rounded-3xl border border-ink-100 bg-white p-5 sm:p-7">
+            <section key="pickup" className="animate-[price-in_250ms_ease-out] rounded-3xl border border-ink-100 bg-card p-5 sm:p-7">
               <h2 className="text-base font-semibold text-ink-900">Pickup location</h2>
               <div className="mt-5 flex gap-4">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
@@ -244,7 +244,7 @@ export function Checkout({ cart, onBack, onSubmit, submitting = false, notice }:
         </div>
 
         {/* Right: summary */}
-        <aside className="rounded-3xl border border-ink-100 bg-white p-5 sm:p-7 lg:sticky lg:top-24">
+        <aside className="rounded-3xl border border-ink-100 bg-card p-5 sm:p-7 lg:sticky lg:top-24">
           <h2 className="text-base font-semibold text-ink-900">Order summary</h2>
           <ul className="mt-4 divide-y divide-ink-100">
             {cart.items.map((item) => (

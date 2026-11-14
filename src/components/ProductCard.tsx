@@ -24,7 +24,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
   }
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl border border-ink-100 bg-white">
+    <article className="flex flex-col overflow-hidden rounded-2xl border border-ink-100 bg-card">
       <div className="aspect-[4/3]">
         <ProductImage product={product} alt={`${product.name}, ${size.label}`} />
       </div>

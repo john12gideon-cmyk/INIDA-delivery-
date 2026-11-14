@@ -16,7 +16,7 @@ export function FulfillmentToggle({ value, onChange }: FulfillmentToggleProps) {
     <div role="radiogroup" aria-label="Fulfillment method" className="relative grid grid-cols-2 rounded-2xl bg-ink-100 p-1">
       <span
         aria-hidden
-        className={`absolute bottom-1 top-1 w-[calc(50%-4px)] rounded-xl bg-white shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+        className={`absolute bottom-1 top-1 w-[calc(50%-4px)] rounded-xl bg-card shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           value === 'pickup' ? 'translate-x-full' : 'translate-x-0'
         }`}
         style={{ left: 4 }}

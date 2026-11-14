@@ -34,9 +34,15 @@ supabase/
 ```
 
 ## Design System
-- Accent: burnt/sunset orange (`brand-*` tokens, primary `#E8590C`)
-- Neutrals: deep charcoal/slate (`ink-*` tokens), background off-white `#FAF9F6`
-- Success: emerald `#10B981`
+- Boutique pantry palette, tokens in `src/index.css`:
+  - Accent: palm-oil terracotta (`brand-*`, primary action `brand-500` = `#B4441C`, hover `brand-600`)
+  - Highlight: amber `#E09A2C` (`amber`)
+  - Neutrals: roasted charcoal (`ink-*`, text `ink-900` = `#2A211B`, muted `ink-500` = `#6F6256`)
+  - Background: parchment `#F6EFE2` (`cream`); cards `#FFFBF4` (`card`)
+  - Success: emerald `#10B981`
+- Type: Bricolage Grotesque (`font-display`: headings, prices), Figtree (`font-sans`: body)
+- Frosted glass (`backdrop-blur-md`) only on the sticky header, cart drawer and
+  checkout order summary
 - Mobile-first, generous whitespace, rounded-2xl cards, subtle shadows
 - Every interactive state (hover, focus, disabled, loading) must be defined.
   No layout shift, no flash of empty content.

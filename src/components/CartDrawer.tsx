@@ -112,7 +112,7 @@ export function CartDrawer({ open, onClose, cart, onCheckout }: CartDrawerProps)
                       </button>
                     </div>
                     <div className="mt-auto flex items-center justify-between pt-3">
-                      <div className="flex items-center rounded-full border border-ink-200 bg-white">
+                      <div className="flex items-center rounded-full border border-ink-200 bg-card">
                         <button
                           type="button"
                           onClick={() => cart.setQuantity(item.key, item.quantity - 1)}
@@ -141,7 +141,7 @@ export function CartDrawer({ open, onClose, cart, onCheckout }: CartDrawerProps)
               })}
             </ul>
 
-            <div className="shrink-0 border-t border-ink-100 bg-white px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
+            <div className="shrink-0 border-t border-ink-100 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
               <div className="flex items-baseline justify-between">
                 <span className="text-sm font-medium text-ink-500">Subtotal</span>
                 <span className="font-display text-2xl font-semibold tabular-nums text-ink-900">

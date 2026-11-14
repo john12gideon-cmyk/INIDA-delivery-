@@ -23,7 +23,7 @@ export function PaymentStatusOverlay({ state, onRetry, onDismiss }: PaymentStatu
           <p className="mt-1.5 text-sm text-ink-500">This takes a few seconds. Please keep this page open.</p>
         </div>
       ) : (
-        <div className="w-full max-w-sm rounded-3xl border border-ink-100 bg-white p-6 text-center shadow-xl">
+        <div className="w-full max-w-sm rounded-3xl border border-ink-100 bg-card p-6 text-center shadow-xl">
           <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
             <AlertCircle className="h-7 w-7" />
           </span>

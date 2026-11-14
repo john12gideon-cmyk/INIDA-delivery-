@@ -46,12 +46,12 @@ export function SuccessScreen({ order, onContinue }: SuccessScreenProps) {
         <p className="mt-2 animate-[rise-in_500ms_ease-out_280ms_both] text-ink-500">
           Thank you, {order.customerName.split(' ')[0]}. Payment received.
         </p>
-        <p className="mt-5 animate-[rise-in_500ms_ease-out_360ms_both] rounded-full border border-ink-200 bg-white px-4 py-1.5 font-mono text-sm font-semibold tracking-wide text-ink-900">
+        <p className="mt-5 animate-[rise-in_500ms_ease-out_360ms_both] rounded-full border border-ink-200 bg-card px-4 py-1.5 font-mono text-sm font-semibold tracking-wide text-ink-900">
           #{order.orderCode}
         </p>
       </div>
 
-      <div className="mt-10 animate-[rise-in_600ms_ease-out_450ms_both] overflow-hidden rounded-3xl border border-ink-100 bg-white">
+      <div className="mt-10 animate-[rise-in_600ms_ease-out_450ms_both] overflow-hidden rounded-3xl border border-ink-100 bg-card">
         {/* Fulfillment summary */}
         <div className="flex gap-4 border-b border-ink-100 p-5 sm:p-6">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
@@ -121,7 +121,7 @@ export function SuccessScreen({ order, onContinue }: SuccessScreenProps) {
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-ink-200 bg-white text-sm font-semibold text-ink-900 transition-colors hover:border-ink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-ink-200 bg-card text-sm font-semibold text-ink-900 transition-colors hover:border-ink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
         >
           {toast === 'copied' ? <Check className="h-4 w-4 text-success" strokeWidth={2.5} /> : <Copy className="h-4 w-4" />}
           {toast === 'copied' ? 'Copied!' : 'Copy Receipt'}
@@ -131,7 +131,7 @@ export function SuccessScreen({ order, onContinue }: SuccessScreenProps) {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-ink-200 bg-white text-sm font-semibold text-ink-900 transition-colors hover:border-ink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-ink-200 bg-card text-sm font-semibold text-ink-900 transition-colors hover:border-ink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             <MessageCircle className="h-4 w-4" />
             Send to INIDA on WhatsApp

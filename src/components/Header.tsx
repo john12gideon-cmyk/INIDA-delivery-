@@ -20,7 +20,7 @@ export function Header({ cartCount, onCartClick }: HeaderProps) {
           type="button"
           onClick={onCartClick}
           aria-label={`Open cart, ${cartCount} item${cartCount === 1 ? '' : 's'}`}
-          className="relative inline-flex h-11 items-center gap-2 rounded-full border border-ink-200 bg-white pl-4 pr-3 text-sm font-semibold text-ink-900 transition-colors hover:border-ink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          className="relative inline-flex h-11 items-center gap-2 rounded-full border border-ink-200 bg-card pl-4 pr-3 text-sm font-semibold text-ink-900 transition-colors hover:border-ink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
         >
           <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={2} />
           <span className="hidden sm:inline">Cart</span>
