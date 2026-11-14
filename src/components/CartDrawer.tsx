@@ -1,9 +1,11 @@
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react'
+import { ArrowRight, ShoppingBag, Trash2, X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import type { CartApi } from '../hooks/useCart'
 import { formatNaira } from '../lib/format'
 import { getProduct } from '../data/products'
 import { ProductImage } from './ProductImage'
+import { QuantityStepper } from './QuantityStepper'
+import { MAX_QUANTITY_PER_LINE } from '../../supabase/functions/_shared/catalog'
 
 interface CartDrawerProps {
   open: boolean
@@ -112,25 +114,13 @@ export function CartDrawer({ open, onClose, cart, onCheckout }: CartDrawerProps)
                       </button>
                     </div>
                     <div className="mt-auto flex items-center justify-between pt-3">
-                      <div className="flex items-center rounded-full border border-ink-200 bg-card">
-                        <button
-                          type="button"
-                          onClick={() => cart.setQuantity(item.key, item.quantity - 1)}
-                          aria-label={`Decrease ${item.name} quantity`}
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-600 transition-colors hover:bg-ink-50 hover:text-ink-900"
-                        >
-                          <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
-                        </button>
-                        <span className="w-7 text-center text-sm font-semibold tabular-nums text-ink-900">{item.quantity}</span>
-                        <button
-                          type="button"
-                          onClick={() => cart.setQuantity(item.key, item.quantity + 1)}
-                          aria-label={`Increase ${item.name} quantity`}
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-600 transition-colors hover:bg-ink-50 hover:text-ink-900"
-                        >
-                          <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
-                        </button>
-                      </div>
+                      <QuantityStepper
+                        size="sm"
+                        value={item.quantity}
+                        max={MAX_QUANTITY_PER_LINE}
+                        onChange={(q) => cart.setQuantity(item.key, q)}
+                        label={item.name}
+                      />
                       <p className="text-sm font-semibold tabular-nums text-ink-900">
                         {formatNaira(item.unitPrice * item.quantity)}
                       </p>

@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { CartDrawer } from './components/CartDrawer'
+import { CategorySection } from './components/CategorySection'
 import { Checkout } from './components/Checkout'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
 import { PaymentStatusOverlay } from './components/PaymentStatusOverlay'
-import { ProductCard } from './components/ProductCard'
 import { SuccessScreen } from './components/SuccessScreen'
-import { PRODUCTS } from './data/products'
+import { PRODUCTS, PRODUCT_CATEGORIES } from './data/products'
 import { useCart } from './hooks/useCart'
 import {
   OrderError,
@@ -153,24 +153,27 @@ export default function App() {
         ) : (
           <>
             <Hero />
-            <section id="shop" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-24 sm:px-6">
-              <div className="mb-8 flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600">Flagship range</p>
-                  <h2 className="mt-1.5 font-display text-3xl font-semibold text-ink-900 sm:text-4xl">Shop INIDA</h2>
-                </div>
-              </div>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {PRODUCTS.map((product) => (
-                  <ProductCard key={product.id} product={product} onAdd={cart.addItem} />
-                ))}
-              </div>
-            </section>
+            <div id="shop" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-20 sm:px-6">
+              {PRODUCT_CATEGORIES.map((category) => (
+                <CategorySection
+                  key={category.id}
+                  category={category}
+                  products={PRODUCTS.filter((p) => p.category === category.id)}
+                  cart={cart}
+                />
+              ))}
+            </div>
           </>
         )}
       </main>
       <footer className="border-t border-ink-100 py-8 text-center text-xs text-ink-400">
-        © {YEAR} INIDA Foods. Uyo, Akwa Ibom.
+        © {YEAR} INIDA Foods. Uyo, Akwa Ibom.{' '}
+        <a
+          href="/images/CREDITS.md"
+          className="underline decoration-ink-300 underline-offset-2 transition-colors hover:text-ink-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+        >
+          Photo credits
+        </a>
       </footer>
 
       <CartDrawer open={cartOpen} onClose={closeCart} cart={cart} onCheckout={() => {
