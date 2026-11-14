@@ -2,7 +2,8 @@ import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import type { CartApi } from '../hooks/useCart'
 import { formatNaira } from '../lib/format'
-import { PackagingMockup } from './PackagingMockup'
+import { getProduct } from '../data/products'
+import { ProductImage } from './ProductImage'
 
 interface CartDrawerProps {
   open: boolean
@@ -86,10 +87,12 @@ export function CartDrawer({ open, onClose, cart, onCheckout }: CartDrawerProps)
         ) : (
           <>
             <ul className="flex-1 divide-y divide-ink-100 overflow-y-auto overscroll-contain px-5">
-              {cart.items.map((item) => (
+              {cart.items.map((item) => {
+                const product = getProduct(item.productId)
+                return (
                 <li key={item.key} className="flex gap-4 py-5">
-                  <div className="flex h-20 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-brand-50 to-white p-1.5 ring-1 ring-ink-100">
-                    <PackagingMockup productId={item.productId} variantLabel={item.variantLabel} sizeLabel={item.sizeLabel} />
+                  <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl ring-1 ring-ink-100">
+                    {product && <ProductImage product={product} alt="" iconClassName="h-6 w-6" />}
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col">
                     <div className="flex items-start justify-between gap-3">
@@ -134,7 +137,8 @@ export function CartDrawer({ open, onClose, cart, onCheckout }: CartDrawerProps)
                     </div>
                   </div>
                 </li>
-              ))}
+                )
+              })}
             </ul>
 
             <div className="shrink-0 border-t border-ink-100 bg-white px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">

@@ -1,33 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { MAX_QUANTITY_PER_LINE } from '../../supabase/functions/_shared/catalog'
+import { reconcileCart } from '../lib/cart'
 import type { CartItem } from '../types'
 
 const STORAGE_KEY = 'inida.cart.v1'
-
-function isCartItem(value: unknown): value is CartItem {
-  if (typeof value !== 'object' || value === null) return false
-  const v = value as Record<string, unknown>
-  return (
-    typeof v.key === 'string' &&
-    typeof v.productId === 'string' &&
-    typeof v.name === 'string' &&
-    typeof v.sizeId === 'string' &&
-    typeof v.sizeLabel === 'string' &&
-    typeof v.unitPrice === 'number' &&
-    typeof v.quantity === 'number' &&
-    v.quantity > 0
-  )
-}
 
 function loadCart(): CartItem[] {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY)
     if (!raw) return []
-    const parsed: unknown = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed.filter(isCartItem) : []
+    return reconcileCart(JSON.parse(raw))
   } catch {
     return []
   }
 }
+
+const clampQuantity = (q: number) => Math.min(q, MAX_QUANTITY_PER_LINE)
 
 export function useCart() {
   const [items, setItems] = useState<CartItem[]>(loadCart)
@@ -44,15 +32,17 @@ export function useCart() {
     setItems((prev) => {
       const existing = prev.find((i) => i.key === item.key)
       if (existing) {
-        return prev.map((i) => (i.key === item.key ? { ...i, quantity: i.quantity + quantity } : i))
+        return prev.map((i) =>
+          i.key === item.key ? { ...i, quantity: clampQuantity(i.quantity + quantity) } : i,
+        )
       }
-      return [...prev, { ...item, quantity }]
+      return [...prev, { ...item, quantity: clampQuantity(quantity) }]
     })
   }, [])
 
   const setQuantity = useCallback((key: string, quantity: number) => {
     setItems((prev) =>
-      quantity <= 0 ? prev.filter((i) => i.key !== key) : prev.map((i) => (i.key === key ? { ...i, quantity } : i)),
+      quantity <= 0 ? prev.filter((i) => i.key !== key) : prev.map((i) => (i.key === key ? { ...i, quantity: clampQuantity(quantity) } : i)),
     )
   }, [])
 

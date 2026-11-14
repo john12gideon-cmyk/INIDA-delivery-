@@ -1,7 +1,8 @@
-import type { CatalogProduct, CatalogZone, ProductId } from '../../supabase/functions/_shared/catalog'
+import type { CatalogCategory, CatalogProduct, CatalogZone, CategoryId, ProductId } from '../../supabase/functions/_shared/catalog'
 
-export type { ProductId }
+export type { CategoryId, ProductId }
 export type Product = CatalogProduct
+export type Category = CatalogCategory
 export type DeliveryZone = CatalogZone
 
 export interface CartItem {

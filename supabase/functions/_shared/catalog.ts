@@ -3,7 +3,24 @@
 // (authoritative pricing). Keep this file dependency-free so it runs in
 // Vite, Node and Deno unchanged.
 
-export type ProductId = 'crayfish' | 'dryfish' | 'palmoil'
+export type CategoryId = 'crayfish' | 'dryfish' | 'palmoil'
+
+export type ProductId =
+  | 'crayfish-whole-250'
+  | 'crayfish-whole-500'
+  | 'crayfish-ground-200'
+  | 'catfish-cuts-300'
+  | 'catfish-jumbo-600'
+  | 'fish-flakes-250'
+  | 'palmoil-1l'
+  | 'palmoil-2l'
+  | 'palmoil-5l'
+
+export interface CatalogCategory {
+  id: CategoryId
+  name: string
+  intro: string
+}
 
 export interface CatalogOption {
   id: string
@@ -14,14 +31,18 @@ export interface CatalogSize extends CatalogOption {
   price: number // Naira
 }
 
+/** One sellable SKU. Exactly one size, no variants. */
 export interface CatalogProduct {
   id: ProductId
+  category: CategoryId
   name: string
-  tagline: string
-  description: string
-  packaging: 'pouch' | 'bottle'
+  /** Photo under /images/. Omitted until a real product photo exists. */
+  image?: string
+  /** Short size shown on the card photo, e.g. "250g" or "5L". */
+  badge: string
+  sizes: [CatalogSize]
+  /** Unused by current SKUs; kept so order.ts validation stays unchanged. */
   variants?: CatalogOption[]
-  sizes: CatalogSize[]
 }
 
 export interface CatalogZone {
@@ -30,53 +51,82 @@ export interface CatalogZone {
   fee: number // Naira
 }
 
+export const CATEGORIES: CatalogCategory[] = [
+  { id: 'crayfish', name: 'Crayfish', intro: 'Sun-dried Oron crayfish, sorted by hand and free of grit.' },
+  { id: 'dryfish', name: 'Dry Fish', intro: 'Catfish slow-smoked over hardwood until firm and aromatic.' },
+  { id: 'palmoil', name: 'Red Palm Oil', intro: 'Freshly pressed in Akwa Ibom. No dye, no blending.' },
+]
+
 export const CATALOG: CatalogProduct[] = [
   {
-    id: 'crayfish',
-    name: 'Branded Crayfish',
-    tagline: 'Sun-dried, sorted, stone-free',
-    description:
-      'Hand-picked from Atlantic coastal catches, cleaned and sealed for deep, smoky flavour in every pot.',
-    packaging: 'pouch',
-    variants: [
-      { id: 'whole', label: 'Whole' },
-      { id: 'blended', label: 'Blended (Ground)' },
-    ],
-    sizes: [
-      { id: '250g', label: '250g Pouch', price: 2500 },
-      { id: '500g', label: '500g Pouch', price: 4800 },
-      { id: '1kg', label: '1kg Family Pack', price: 9200 },
-    ],
+    id: 'crayfish-whole-250',
+    category: 'crayfish',
+    name: 'Whole Oron Crayfish',
+    image: '/images/crayfish-whole.jpg',
+    badge: '250g',
+    sizes: [{ id: '250g', label: '250g Pouch', price: 3500 }],
   },
   {
-    id: 'dryfish',
-    name: 'Branded Dry Fish',
-    tagline: 'Slow-smoked over hardwood',
-    description:
-      'Firm, aromatic and properly dried. Ready for soups, stews and native pots without the market hassle.',
-    packaging: 'pouch',
-    variants: [
-      { id: 'catfish', label: 'Smoked Catfish' },
-      { id: 'stockfish', label: 'Deboned Stockfish Cuts' },
-    ],
-    sizes: [
-      { id: 'small', label: 'Small Pack', price: 3500 },
-      { id: 'medium', label: 'Medium Pack', price: 6500 },
-      { id: 'jumbo', label: 'Jumbo Pack', price: 12000 },
-    ],
+    id: 'crayfish-whole-500',
+    category: 'crayfish',
+    name: 'Whole Oron Crayfish',
+    image: '/images/crayfish-whole.jpg',
+    badge: '500g',
+    sizes: [{ id: '500g', label: '500g Family Pack', price: 6500 }],
   },
   {
-    id: 'palmoil',
-    name: 'Branded Red Palm Oil',
-    tagline: 'Pure, unadulterated, rich red',
-    description:
-      'Freshly pressed from Akwa Ibom palm fruits. No dyes, no blends, sealed for hygiene and shelf life.',
-    packaging: 'bottle',
-    sizes: [
-      { id: '1l', label: '1 Litre Bottle', price: 2200 },
-      { id: '2l', label: '2 Litres Gallon', price: 4200 },
-      { id: '5l', label: '5 Litres Keg', price: 10000 },
-    ],
+    id: 'crayfish-ground-200',
+    category: 'crayfish',
+    name: 'Stone-Free Ground Crayfish',
+    badge: '200g',
+    sizes: [{ id: '200g', label: '200g Jar/Pouch', price: 3200 }],
+  },
+  {
+    id: 'catfish-cuts-300',
+    category: 'dryfish',
+    name: 'Hardwood-Smoked Catfish (Whole Cuts)',
+    image: '/images/catfish-smoked.jpg',
+    badge: '300g',
+    sizes: [{ id: '300g', label: '300g Pack', price: 4800 }],
+  },
+  {
+    id: 'catfish-jumbo-600',
+    category: 'dryfish',
+    name: 'Hardwood-Smoked Catfish (Jumbo)',
+    image: '/images/catfish-smoked.jpg',
+    badge: '600g',
+    sizes: [{ id: '600g', label: '600g Pack', price: 9000 }],
+  },
+  {
+    id: 'fish-flakes-250',
+    category: 'dryfish',
+    name: 'Deboned Dry Fish Flakes',
+    badge: '250g',
+    sizes: [{ id: '250g', label: '250g Pack', price: 4200 }],
+  },
+  {
+    id: 'palmoil-1l',
+    category: 'palmoil',
+    name: 'Pure Unadulterated Red Palm Oil',
+    image: '/images/palm-oil.jpg',
+    badge: '1L',
+    sizes: [{ id: '1l', label: '1 Litre Bottle', price: 3000 }],
+  },
+  {
+    id: 'palmoil-2l',
+    category: 'palmoil',
+    name: 'Pure Unadulterated Red Palm Oil',
+    image: '/images/palm-oil.jpg',
+    badge: '2L',
+    sizes: [{ id: '2l', label: '2 Litre Keg', price: 5800 }],
+  },
+  {
+    id: 'palmoil-5l',
+    category: 'palmoil',
+    name: 'Pure Unadulterated Red Palm Oil',
+    image: '/images/palm-oil.jpg',
+    badge: '5L',
+    sizes: [{ id: '5l', label: '5 Litre Kitchen Keg', price: 14000 }],
   },
 ]
 
