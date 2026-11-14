@@ -7,7 +7,7 @@ interface HeaderProps {
 
 export function Header({ cartCount, onCartClick }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 border-b border-ink-100/80 bg-cream/85 backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-ink-100/80 bg-cream/75 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <a href="/" className="flex items-center gap-2.5" aria-label="INIDA home">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500 font-display text-lg font-bold text-cream">

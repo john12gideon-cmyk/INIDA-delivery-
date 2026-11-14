@@ -244,7 +244,7 @@ export function Checkout({ cart, onBack, onSubmit, submitting = false, notice }:
         </div>
 
         {/* Right: summary */}
-        <aside className="rounded-3xl border border-ink-100 bg-card p-5 sm:p-7 lg:sticky lg:top-24">
+        <aside className="rounded-2xl border border-ink-100 bg-card/80 p-5 backdrop-blur-md sm:p-7 lg:sticky lg:top-24">
           <h2 className="text-base font-semibold text-ink-900">Order summary</h2>
           <ul className="mt-4 divide-y divide-ink-100">
             {cart.items.map((item) => (

@@ -39,7 +39,7 @@ export function CartDrawer({ open, onClose, cart, onCheckout }: CartDrawerProps)
     <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
       <div
         onClick={onClose}
-        className={`absolute inset-0 bg-ink-900/40 backdrop-blur-[2px] transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-ink-900/45 transition-opacity duration-300 ${
           open ? 'opacity-100' : 'opacity-0'
         }`}
       />
@@ -49,7 +49,7 @@ export function CartDrawer({ open, onClose, cart, onCheckout }: CartDrawerProps)
         aria-modal="true"
         aria-label="Shopping cart"
         inert={!open}
-        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-cream shadow-2xl transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+        className={`absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-card/85 shadow-2xl ring-1 ring-ink-100 backdrop-blur-md transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -131,7 +131,7 @@ export function CartDrawer({ open, onClose, cart, onCheckout }: CartDrawerProps)
               })}
             </ul>
 
-            <div className="shrink-0 border-t border-ink-100 bg-card px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
+            <div className="shrink-0 border-t border-ink-100 bg-card/70 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
               <div className="flex items-baseline justify-between">
                 <span className="text-sm font-medium text-ink-500">Subtotal</span>
                 <span className="font-display text-2xl font-semibold tabular-nums text-ink-900">
