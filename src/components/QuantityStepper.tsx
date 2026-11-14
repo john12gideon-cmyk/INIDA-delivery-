@@ -1,4 +1,5 @@
 import { Minus, Plus } from 'lucide-react'
+import type { Ref } from 'react'
 
 interface QuantityStepperProps {
   value: number
@@ -7,6 +8,8 @@ interface QuantityStepperProps {
   /** Product name used in the button labels. */
   label: string
   size?: 'sm' | 'md'
+  /** Lets the caller move focus onto the increase button. */
+  incrementRef?: Ref<HTMLButtonElement>
 }
 
 const SIZES = {
@@ -15,10 +18,10 @@ const SIZES = {
 }
 
 /** Minus at 1 calls onChange(0) so the caller can remove the line. */
-export function QuantityStepper({ value, max, onChange, label, size = 'md' }: QuantityStepperProps) {
+export function QuantityStepper({ value, max, onChange, label, size = 'md', incrementRef }: QuantityStepperProps) {
   const s = SIZES[size]
   const atMax = value >= max
-  const button = `flex ${s.button} items-center justify-center rounded-full text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:text-ink-300 disabled:hover:bg-transparent`
+  const button = `flex ${s.button} items-center justify-center rounded-full text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500 aria-disabled:cursor-not-allowed aria-disabled:text-ink-300 aria-disabled:hover:bg-transparent`
 
   return (
     <div className={`inline-flex ${s.wrap} items-center rounded-full border border-ink-200 bg-card`}>
@@ -30,8 +33,12 @@ export function QuantityStepper({ value, max, onChange, label, size = 'md' }: Qu
       </span>
       <button
         type="button"
-        onClick={() => onChange(value + 1)}
-        disabled={atMax}
+        ref={incrementRef}
+        // aria-disabled, not disabled: a disabled button drops keyboard focus at the limit.
+        onClick={() => {
+          if (!atMax) onChange(value + 1)
+        }}
+        aria-disabled={atMax}
         aria-label={atMax ? `Maximum of ${max} reached for ${label}` : `Increase quantity of ${label}`}
         className={button}
       >
